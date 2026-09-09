@@ -1,0 +1,10 @@
+names:
+  0: plane
+  1: shipwreck
+  2: container
+  3: building
+  4: tyre
+nc: 5
+path: C:\Users\Mantra\OneDrive\Desktop\SIH PROTOTYPE\dataset_targeted
+train: images/train
+val: images/val

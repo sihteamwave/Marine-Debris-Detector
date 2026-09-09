@@ -1,0 +1,41 @@
+[
+  {
+    "id": "SSS-004",
+    "case_name": "Clear Debris",
+    "image": "clear_debris.jpg",
+    "class": "Container",
+    "confidence": 0.94,
+    "shadow_strength": "Strong",
+    "status": "Pending Review",
+    "latitude": 7.8220,
+    "longitude": 77.4847,
+    "bbox": [120, 140, 310, 280],
+    "notes": "High-contrast object with pronounced acoustic shadow. Strong candidate for intermodal cargo container."
+  },
+  {
+    "id": "SSS-005",
+    "case_name": "Weak Candidate",
+    "image": "weak_candidate.jpg",
+    "class": "Shipwreck",
+    "confidence": 0.71,
+    "shadow_strength": "Weak",
+    "status": "Pending Review",
+    "latitude": 7.8185,
+    "longitude": 77.4791,
+    "bbox": [200, 180, 320, 260],
+    "notes": "Faint return signal. Elongated vessel hull ribbing with lateral shadow."
+  },
+  {
+    "id": "SSS-006",
+    "case_name": "Unknown Anomaly",
+    "image": "unknown_anomaly.jpg",
+    "class": "Building",
+    "confidence": 0.63,
+    "shadow_strength": "Ambiguous",
+    "status": "Pending Review",
+    "latitude": 7.8230,
+    "longitude": 77.4870,
+    "bbox": [160, 120, 350, 300],
+    "notes": "Irregular sonar return pattern. Shadow geometry does not match common debris profiles. Expert review recommended."
+  }
+]

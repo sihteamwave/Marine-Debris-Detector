@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #1c3d66 #071324;
+  }
+  body {
+    @apply bg-marine-950 text-slate-100 font-sans min-h-screen;
+  }
+}
+
+/* Custom scrollbar for marine console vibe */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #071324;
+}
+::-webkit-scrollbar-thumb {
+  background: #17365d;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #0284c7;
+}
+
+/* Sonar radar pulse animation */
+@keyframes sonarPulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+}
+
+.animate-sonar-pulse {
+  animation: sonarPulse 3s infinite ease-in-out;
+}
+
+/* Acoustic Waterfall Scan Grid Overlay */
+.sonar-waterfall-bg {
+  background-color: #020713;
+  background-image: 
+    linear-gradient(rgba(14, 165, 233, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14, 165, 233, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.maplibregl-popup-content {
+  background: #0b1626 !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #1f3c5f !important;
+  border-radius: 8px !important;
+  padding: 10px 14px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+}
+
+.maplibregl-popup-tip {
+  border-top-color: #0b1626 !important;
+}
+
+/* Leaflet Tactical Map Overrides */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  background: #071324 !important;
+  font-family: inherit;
+}
+
+.leaflet-pane {
+  z-index: 5 !important;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 10 !important;
+}
+
+/* Custom Marker styles */
+.auv-arrow-marker,
+.coastal-base-label,
+.sea-label,
+.primary-detection-pin,
+.pin-callout-card {
+  background: transparent !important;
+  border: none !important;
+}
