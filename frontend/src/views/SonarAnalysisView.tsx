@@ -277,7 +277,7 @@ export const SonarAnalysisView: React.FC<SonarAnalysisViewProps> = ({
                     activeItem.annotatedImage ||
                     (activeItem.image.startsWith('blob:')
                       ? activeItem.image
-                      : `/sonar/${activeItem.image}` || activeItem.image)
+                      : `${import.meta.env.BASE_URL}sonar/${activeItem.image}`)
                   }
                   alt="Side-Scan Sonar Waterfall"
                   onLoad={(e) => {

@@ -9,6 +9,9 @@
 [![Ultralytics YOLO11-Seg](https://img.shields.io/badge/YOLO11--Seg-Fine--Tuned-00FFFF.svg)](https://ultralytics.com)
 [![React 18 + Vite](https://img.shields.io/badge/Frontend-React_18_+_Vite-61DAFB.svg?logo=react)](https://vitejs.dev)
 [![IHO S-44 Ed 6.2.0](https://img.shields.io/badge/Standard-IHO_S--44_Ed_6.2.0-00C853.svg)](https://iho.int)
+[![Live Interactive Workstation](https://img.shields.io/badge/Live_Workstation-GitHub_Pages-22c55e?style=flat-square&logo=github)](https://sihteamwave.github.io/Marine-Debris-Detector/)
+
+> 🌐 **Live Public Interactive Workstation:** [https://sihteamwave.github.io/Marine-Debris-Detector/](https://sihteamwave.github.io/Marine-Debris-Detector/)
 
 > **Core Operating Principle:**  
 > *"AI proposes candidates • Sonar evidence assesses acoustic validity • Uncertainty controls automation • Human hydrographers make the final decision."*
