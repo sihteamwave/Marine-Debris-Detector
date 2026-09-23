@@ -9,8 +9,8 @@ Features:
    - Acoustic Time-Varying Gain (TVG) contrast perturbations
    - Rayleigh reverberation speckle injection
    - 180° rotation invariance on flat seafloor
-3. Fine-tunes YOLO11-OBB (yolo11n-obb.pt) on CPU/GPU.
-4. Validates metrics (mAP@50) for Plane and Shipwreck.
+3. Fine-tunes YOLO11-Seg (yolo11n-seg.pt) on CPU/GPU.
+4. Validates metrics (mask mAP@50) for Plane and Shipwreck.
 """
 
 import os
@@ -24,12 +24,12 @@ import numpy as np
 from pathlib import Path
 from ultralytics import YOLO
 
-ROOT = Path(r"C:\Users\Mantra\OneDrive\Desktop\SIH PROTOTYPE")
+ROOT = Path(__file__).parent.parent.resolve()
 SRC_DATASET = ROOT / "dataset_sih26057"
 TARGET_DATASET = ROOT / "dataset_targeted"
 
-def rotate_obb_coords(pts, angle_deg, img_w, img_h):
-    """Rotates 4 normalized OBB points by 180 or horizontal flip."""
+def rotate_polygon_coords(pts, angle_deg, img_w, img_h):
+    """Rotates normalized polygon points by 180 or horizontal flip."""
     # pts: list of (x, y) in [0, 1]
     # For horizontal flip (fliplr): x' = 1 - x, y' = y
     return [(1.0 - p[0], p[1]) for p in pts]
@@ -153,7 +153,7 @@ def run_targeted_training(yaml_path, epochs=12, imgsz=640, batch=4):
     weights_dir = ROOT / "weights"
     weights_dir.mkdir(exist_ok=True)
 
-    base_weights = ROOT / "yolo11n-obb.pt"
+    base_weights = ROOT / "yolo11n-seg.pt"
     print(f"Starting weights: {base_weights}")
     model = YOLO(str(base_weights))
 
@@ -167,6 +167,7 @@ def run_targeted_training(yaml_path, epochs=12, imgsz=640, batch=4):
         batch=batch,
         device="cpu",
         workers=0,
+        task="segment",
         optimizer="AdamW",
         lr0=0.0015,
         lrf=0.01,
@@ -185,24 +186,24 @@ def run_targeted_training(yaml_path, epochs=12, imgsz=640, batch=4):
 
     print("\nEvaluating trained model on validation set...")
     metrics = model.val()
-    print(f"mAP@50 (OBB): {metrics.box.map50:.4f}")
-    print(f"mAP@50-95   : {metrics.box.map:.4f}")
+    if hasattr(metrics, 'seg') and metrics.seg is not None:
+        print(f"mAP@50 (Mask): {metrics.seg.map50:.4f}")
+        print(f"mAP@50-95 (Mask): {metrics.seg.map:.4f}")
+    if hasattr(metrics, 'box') and metrics.box is not None:
+        print(f"mAP@50 (Box): {metrics.box.map50:.4f}")
+        print(f"mAP@50-95 (Box): {metrics.box.map:.4f}")
 
     # Copy best weights
     best_pt = ROOT / "runs_targeted" / "plane_shipwreck_boost" / "weights" / "best.pt"
-    dest_pt = weights_dir / "yolo11_sonar_best.pt"
+    dest_pt = weights_dir / "yolo11_seg_best.pt"
     if best_pt.exists():
         shutil.copy(best_pt, dest_pt)
-        # Also copy to root as trained checkpoint
-        shutil.copy(best_pt, ROOT / "yolo11n-obb.pt")
         print(f"\n[SUCCESS] Best trained weights saved to:")
         print(f"  -> {dest_pt}")
-        print(f"  -> {ROOT / 'yolo11n-obb.pt'}")
     else:
         last_pt = ROOT / "runs_targeted" / "plane_shipwreck_boost" / "weights" / "last.pt"
         if last_pt.exists():
             shutil.copy(last_pt, dest_pt)
-            shutil.copy(last_pt, ROOT / "yolo11n-obb.pt")
             print(f"[SUCCESS] Trained weights (last.pt) saved to: {dest_pt}")
 
     return results

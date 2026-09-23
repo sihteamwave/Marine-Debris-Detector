@@ -5,6 +5,6 @@ names:
   3: building
   4: tyre
 nc: 5
-path: C:\Users\Mantra\OneDrive\Desktop\SIH PROTOTYPE\dataset_targeted
+path: e:\SIH PROTOTYPE\dataset_targeted
 train: images/train
 val: images/val

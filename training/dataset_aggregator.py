@@ -1,7 +1,7 @@
 """
 SIH26057 Multi-Dataset Aggregator & Normalizer
 Unifies disparate open-source sonar & synthetic repositories into a standardized
-YOLO11-OBB (Oriented Bounding Box) format for Marine Debris Detection.
+YOLO11-Seg (Instance Segmentation) format for Marine Debris Detection.
 
 Supported Repositories:
   1. SeabedObjects-KLSG (Kaggle Challenge: 385 wrecks, 62 airplanes, 129 mines, 36 victims, 578 backgrounds)
@@ -113,7 +113,7 @@ class DatasetAggregator:
         print(f"Initialized dataset directory at: {self.output_root.resolve()}")
 
     def export_dataset_yaml(self) -> Path:
-        """Writes dataset.yaml for Ultralytics YOLO11-OBB training."""
+        """Writes dataset.yaml for Ultralytics YOLO11-Seg training."""
         yaml_data = {
             "path": str(self.output_root.resolve()),
             "train": "images/train",
@@ -173,7 +173,7 @@ class DatasetAggregator:
             "recommended_strategy": [
                 "1. Pretrain on SeabedObjects-KLSG + NOMBO/MILCO for general acoustic shadow physics.",
                 "2. Synthesize 1,500 domain-specific ghost net and plastic cluster samples via Ray-Tracing.",
-                "3. Fine-tune YOLO11-OBB with oriented bounding boxes to eliminate background sand ripple false positives.",
+                "3. Fine-tune YOLO11-Seg with polygonal instance segmentation to eliminate background sand ripple false positives.",
                 "4. Enforce dual-modality validation (Confidence >= 70% + Acoustic Shadow Length >= 1.5m)."
             ]
         }

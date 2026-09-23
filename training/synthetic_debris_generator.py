@@ -5,7 +5,7 @@ Combines optical/synthetic contours (DebrisVision / S3Simulator) with acoustic p
   2. Acoustic shadow projection: L_s = (h * R_s) / (H_sensor - h)
   3. Rayleigh multiplicative speckle noise characteristic of underwater acoustic reverberation.
   4. Nadir blind-zone beam pattern attenuation.
-  5. Automatic YOLO11-OBB annotation export ([cls, x1, y1, x2, y2, x3, y4, x5, y6, x7, x8]).
+  5. Automatic YOLO11-Seg instance segmentation polygon annotation export.
 """
 
 import math
@@ -74,7 +74,7 @@ class SyntheticSonarDebrisGenerator:
     ) -> Dict[str, Any]:
         """
         Renders a debris object with acoustic highlight + projected acoustic shadow.
-        Returns oriented bounding box vertices for YOLO-OBB annotation.
+        Returns polygon segmentation vertices for YOLO11-Seg annotation.
         """
         h_canvas, w_canvas = canvas.shape[:2]
         center_x = w_canvas // 2
@@ -108,7 +108,11 @@ class SyntheticSonarDebrisGenerator:
         # Draw deep acoustic shadow (values 5-20)
         shadow_mask = np.zeros_like(canvas, dtype=np.uint8)
         cv2.fillPoly(shadow_mask, [shadow_box], 255)
-        canvas[shadow_mask > 0] = np.random.randint(5, 22, size=canvas[shadow_mask > 0].shape, dtype=np.uint8)
+        # Shadow pixel intensity: mud covered debris has softer shadow due to acoustic sediment penetration
+        if debris_type == "mud_covered_debris":
+            canvas[shadow_mask > 0] = np.random.randint(28, 48, size=canvas[shadow_mask > 0].shape, dtype=np.uint8)
+        else:
+            canvas[shadow_mask > 0] = np.random.randint(5, 22, size=canvas[shadow_mask > 0].shape, dtype=np.uint8)
 
         # 2. Draw Acoustic Highlight (Specular return on front-facing surface)
         highlight_mask = np.zeros_like(canvas, dtype=np.uint8)
@@ -133,20 +137,48 @@ class SyntheticSonarDebrisGenerator:
         elif debris_type == "tyre":
             # Dense synthetic rubber return with hollow core
             highlight_vals = np.random.normal(190, 22, size=canvas[highlight_mask > 0].shape)
+        elif debris_type == "cable":
+            # High-intensity linear metallic/copper core reflection
+            highlight_vals = np.random.normal(250, 8, size=canvas[highlight_mask > 0].shape)
+        elif debris_type == "plastic_waste":
+            # Tangled plastic/ghost net micro-scattering return
+            highlight_vals = np.random.normal(175, 35, size=canvas[highlight_mask > 0].shape)
+        elif debris_type == "mud_covered_debris":
+            # Attenuated specular return from mud/silt layer burial
+            highlight_vals = np.random.normal(135, 20, size=canvas[highlight_mask > 0].shape)
+        elif debris_type == "metal_drum":
+            # Saturated cylindrical steel drum / barrel return
+            highlight_vals = np.random.normal(240, 12, size=canvas[highlight_mask > 0].shape)
+        elif debris_type == "wooden_crate":
+            # Moderate wooden grain backscatter return
+            highlight_vals = np.random.normal(185, 25, size=canvas[highlight_mask > 0].shape)
+        elif debris_type == "unexploded_ordnance":
+            # High-reflectivity dense metallic mine/UXO specular highlight
+            highlight_vals = np.random.normal(252, 5, size=canvas[highlight_mask > 0].shape)
+        elif debris_type == "unknown_anomaly":
+            # High-contrast asymmetric acoustic void/saliency return
+            highlight_vals = np.random.normal(215, 38, size=canvas[highlight_mask > 0].shape)
         else:
             highlight_vals = np.random.normal(200, 30, size=canvas[highlight_mask > 0].shape)
 
         canvas[highlight_mask > 0] = np.clip(highlight_vals, 0, 255).astype(np.uint8)
 
-        # 3. Format YOLO-OBB annotation: [cls, x1, y1, x2, y2, x3, y4, x4, y4] normalized
+        # 3. Format YOLO11-Seg annotation: [cls, x1, y1, x2, y2, x3, y4, x4, y4] normalized polygon
         class_map = {
             "plane": 0,
             "shipwreck": 1,
             "container": 2,
             "building": 3,
-            "tyre": 4
+            "tyre": 4,
+            "cable": 5,
+            "plastic_waste": 6,
+            "mud_covered_debris": 7,
+            "metal_drum": 8,
+            "wooden_crate": 9,
+            "unexploded_ordnance": 10,
+            "unknown_anomaly": 11
         }
-        cls_id = class_map.get(debris_type, 2)
+        cls_id = class_map.get(debris_type, 11)
         normalized_corners = []
         for pt in obj_box:
             nx = max(0.0, min(1.0, pt[0] / w_canvas))
@@ -156,7 +188,7 @@ class SyntheticSonarDebrisGenerator:
         return {
             "class_id": cls_id,
             "debris_type": debris_type,
-            "yolo_obb_format": f"{cls_id} " + " ".join(map(str, normalized_corners)),
+            "yolo_seg_format": f"{cls_id} " + " ".join(map(str, normalized_corners)),
             "corners_px": obj_box.tolist(),
             "shadow_len_m": round(shadow_len_m, 2),
             "ground_range_m": round(ground_range_m, 2),
@@ -166,13 +198,17 @@ class SyntheticSonarDebrisGenerator:
     def generate_synthetic_scene(self, output_img_path: Path, output_txt_path: Path,
                                  num_debris: int = 2) -> Dict[str, Any]:
         """
-        Generates a complete side-scan sonar image and saves YOLO-OBB ground-truth label.
+        Generates a complete side-scan sonar image and saves YOLO-Seg ground-truth label.
         """
         w, h = 1024, 512
         canvas = self.generate_seafloor_background(w, h)
         annotations = []
 
-        debris_choices = ["plane", "shipwreck", "container", "building", "tyre"]
+        debris_choices = [
+            "plane", "shipwreck", "container", "building", "tyre", "cable",
+            "plastic_waste", "mud_covered_debris", "metal_drum", "wooden_crate",
+            "unexploded_ordnance", "unknown_anomaly"
+        ]
         for _ in range(num_debris):
             dtype = random.choice(debris_choices)
             # Pick a position away from nadir
@@ -188,8 +224,24 @@ class SyntheticSonarDebrisGenerator:
                 dim = (random.uniform(6.0, 12.2), random.uniform(2.4, 2.6), random.uniform(2.5, 2.9))
             elif dtype == "building":
                 dim = (random.uniform(12.0, 25.0), random.uniform(8.0, 16.0), random.uniform(3.0, 8.0))
-            else: # tyre
+            elif dtype == "tyre":
                 dim = (random.uniform(0.9, 2.0), random.uniform(0.9, 2.0), random.uniform(0.4, 0.9))
+            elif dtype == "cable":
+                dim = (random.uniform(12.0, 35.0), random.uniform(0.3, 0.8), random.uniform(0.2, 0.5))
+            elif dtype == "plastic_waste":
+                dim = (random.uniform(1.5, 4.5), random.uniform(1.2, 3.5), random.uniform(0.3, 1.0))
+            elif dtype == "mud_covered_debris":
+                dim = (random.uniform(3.0, 8.0), random.uniform(2.0, 5.0), random.uniform(0.5, 1.5))
+            elif dtype == "metal_drum":
+                dim = (random.uniform(0.9, 1.4), random.uniform(0.6, 0.9), random.uniform(0.9, 1.2))
+            elif dtype == "wooden_crate":
+                dim = (random.uniform(1.2, 2.5), random.uniform(1.0, 2.0), random.uniform(0.8, 1.5))
+            elif dtype == "unexploded_ordnance":
+                dim = (random.uniform(1.0, 3.0), random.uniform(0.4, 0.8), random.uniform(0.4, 0.9))
+            elif dtype == "unknown_anomaly":
+                dim = (random.uniform(2.5, 7.0), random.uniform(1.5, 4.5), random.uniform(0.8, 2.2))
+            else:
+                dim = (random.uniform(2.0, 5.0), random.uniform(1.0, 3.0), random.uniform(0.5, 1.5))
 
             angle = random.uniform(0.0, 180.0)
             det_info = self.inject_debris_object(canvas, dtype, px, py, dim, angle)
@@ -202,11 +254,11 @@ class SyntheticSonarDebrisGenerator:
         output_img_path.parent.mkdir(parents=True, exist_ok=True)
         cv2.imwrite(str(output_img_path), canvas)
 
-        # Save YOLO-OBB annotation text
+        # Save YOLO-Seg annotation text
         output_txt_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_txt_path, "w", encoding="utf-8") as f:
             for ann in annotations:
-                f.write(ann["yolo_obb_format"] + "\n")
+                f.write(ann["yolo_seg_format"] + "\n")
 
         return {
             "image_path": str(output_img_path),

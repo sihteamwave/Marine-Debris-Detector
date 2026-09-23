@@ -1,0 +1,45 @@
+{
+  "evaluation_summary": {
+    "total_frames_evaluated": 4,
+    "total_raw_candidates_generated": 14,
+    "unique_persistent_targets": 10,
+    "duplicate_reduction_pct": 28.6,
+    "mean_processing_latency_ms_per_frame": 75.4
+  },
+  "perception_metrics": {
+    "total_detections": 14,
+    "mean_detections_per_frame": 3.5,
+    "shadow_presence_distribution": {
+      "STRONG": 0,
+      "MODERATE": 9,
+      "WEAK": 3,
+      "ABSENT": 1,
+      "AMBIGUOUS": 1
+    }
+  },
+  "reliability_and_abstention": {
+    "qa_status_breakdown": {
+      "VALID": 0,
+      "WARNING": 4,
+      "LOW_QUALITY": 0,
+      "INVALID": 0
+    },
+    "uncertainty_decisions": {
+      "ACCEPTED": 1,
+      "REVIEW_REQUIRED": 8,
+      "UNKNOWN": 5
+    },
+    "system_abstention_rate_pct": 92.9,
+    "honest_unknown_rate_pct": 35.7
+  },
+  "geolocation_metrics": {
+    "usable_position_rate_pct": 100.0,
+    "method": "SONAR_SLANT_TO_GROUND_RANGE (Simulated/Replayed)",
+    "precision_claim": "EXACT_NOT_CLAIMED \u2014 bounded by slant geometry uncertainty"
+  },
+  "operational_impact": {
+    "raw_review_burden_candidates": 14,
+    "consolidated_review_burden_targets": 10,
+    "operator_load_reduction_pct": 28.6
+  }
+}

@@ -1,0 +1,1139 @@
+<USER_REQUEST>
+You are a senior Computer Vision Engineer, Deep Learning Engineer, Sonar Image Processing Researcher, and ML debugging specialist.
+
+You are working on my SIH 2026 project:
+
+SIH26057
+AI-Powered Automated Underwater Marine Debris and Anomaly Detection System using Side-Scan Sonar Imagery
+
+CURRENT MODEL:
+YOLO11-Seg
+
+IMPORTANT:
+YOLO11-OBB has been completely removed.
+DO NOT reintroduce YOLO11-OBB.
+
+OBJECTIVE:
+
+Improve the actual detection and segmentation precision of marine debris in Side-Scan Sonar (SSS) imagery.
+
+The current model produces detections, but some detections are inaccurate, too large/small, misplaced, false positives, or fail to identify actual debris.
+
+DO NOT solve this by making the UI look better.
+
+DO NOT create fake detections.
+
+DO NOT manually draw detections.
+
+DO NOT lower confidence thresholds simply to increase detection counts.
+
+The goal is genuine improvement in model performance.
+
+==================================================
+CORE PRINCIPLE
+==================================================
+
+Follow this pipeline:
+
+AUDIT
+→ DIAGNOSE
+→ MEASURE BASELINE
+→ EXPERIMENT
+→ IDENTIFY ROOT CAUSE
+→ IMPLEMENT FIX
+→ RE-TRAIN / RE-INFER
+→ BENCHMARK
+→ REGRESSION TEST
+→ INTEGRATE INTO UI
+
+Never skip directly to retraining.
+
+Every modification must have a measurable reason.
+
+==================================================
+PHASE 0 — REPOSITORY AUDIT
+==================================================
+
+Before changing ANY code, inspect the entire repository.
+
+Find and document:
+
+1. YOLO11-Seg model weights
+   - best.pt
+   - last.pt
+   - other .pt files
+
+2. Dataset configuration
+   - data.yaml
+   - class names
+   - train path
+   - validation path
+   - test path
+
+3. Training scripts
+
+4. Inference scripts
+
+5. Preprocessing pipeline
+
+6. Image resizing/scaling
+
+7. Confidence threshold
+
+8. IoU/NMS threshold
+
+9. Segmentation mask processing
+
+10. SAHI implementation, if present
+
+11. Backend inference API
+
+12. Frontend rendering of detections
+
+13. Coordinate transformations between:
+   - original image
+   - model input
+   - resized image
+   - canvas
+   - browser display
+
+14. Existing evaluation scripts
+
+15. Existing training results
+
+16. Existing confusion matrix
+
+17. Existing results.csv
+
+18. Existing sample predictions
+
+DO NOT modify anything during this phase.
+
+Create:
+
+docs/MODEL_AUDIT.md
+
+containing:
+
+- current architecture
+- model path
+- dataset path
+- classes
+- inference settings
+- preprocessing
+- known issues
+- current metrics
+- suspected failure points
+
+==================================================
+PHASE 1 — ESTABLISH A REAL BASELINE
+==================================================
+
+Create a fixed benchmark dataset.
+
+If a validation/test dataset already exists, use it.
+
+Otherwise create a small manually verified benchmark set.
+
+Target:
+
+50–100 images minimum if available.
+
+Include:
+
+A. Clear positive debris
+B. Small debris
+C. Low-contrast debris
+D. Partially visible debris
+E. Multiple debris objects
+F. Natural seabed
+G. Natural shadows
+H. Sonar artefacts
+I. Difficult false-positive cases
+
+IMPORTANT:
+
+Split by survey/source where possible.
+
+Do NOT randomly split adjacent frames from the same sonar sequence into train and validation.
+
+Create:
+
+tests/sonar_benchmark/
+
+with a documented manifest.
+
+Run the EXISTING MODEL without modification.
+
+Record:
+
+- Precision
+- Recall
+- mAP50
+- mAP50-95
+- segmentation/mask IoU
+- per-class precision
+- per-class recall
+- false positives per image
+- false negatives
+- small-object detection performance
+- inference latency
+
+Save:
+
+reports/baseline_metrics.json
+reports/baseline_predictions/
+
+==================================================
+PHASE 2 — VISUALIZE GROUND TRUTH
+==================================================
+
+Create an annotation inspection tool.
+
+For randomly selected samples display:
+
+LEFT:
+Original SSS image
+
+CENTER:
+Ground-truth segmentation masks
+
+RIGHT:
+Ground truth + model prediction
+
+Use the same coordinate system.
+
+Inspect at least:
+
+50 samples.
+
+Look specifically for:
+
+- masks covering the wrong region
+- masks including acoustic shadows
+- masks missing object boundaries
+- incorrect class labels
+- polygon errors
+- extremely small masks
+- duplicate annotations
+- inconsistent annotation style
+- objects labelled differently across images
+- images containing debris but no annotation
+
+Create:
+
+docs/DATASET_AUDIT.md
+
+Do not retrain until obvious annotation problems have been documented.
+
+==================================================
+PHASE 3 — DATASET QUALITY
+==================================================
+
+Audit:
+
+Class distribution
+
+Object-size distribution
+
+Images per class
+
+Objects per image
+
+Small-object percentage
+
+Negative-image percentage
+
+Train/validation/test distribution
+
+Source/survey distribution
+
+Look for:
+
+- class imbalance
+- insufficient positive examples
+- too few difficult examples
+- duplicated images
+- near-duplicate frames
+- synthetic/real domain mismatch
+- inconsistent masks
+
+Generate plots/tables where useful.
+
+IMPORTANT:
+
+Do NOT invent additional classes.
+
+Only use classes supported by the actual dataset.
+
+If the dataset is insufficient for multi-class classification, recommend temporarily focusing on a smaller reliable taxonomy rather than pretending the model can recognize unsupported classes.
+
+==================================================
+PHASE 4 — RAW VS PREPROCESSED INPUT
+==================================================
+
+Create a controlled A/B experiment.
+
+Test:
+
+A:
+RAW SSS → YOLO11-Seg
+
+B:
+Normalization → YOLO11-Seg
+
+C:
+CLAHE → YOLO11-Seg
+
+D:
+Controlled denoising → YOLO11-Seg
+
+E:
+Normalization + CLAHE → YOLO11-Seg
+
+Do NOT assume preprocessing improves performance.
+
+Measure each experiment using exactly the same benchmark dataset.
+
+Compare:
+
+Precision
+Recall
+mAP50
+mAP50-95
+Mask IoU
+False positives/image
+
+Select preprocessing only if it produces measurable improvement.
+
+Preserve acoustic-shadow information.
+
+Do not aggressively smooth or enhance the image in a way that destroys sonar structure.
+
+==================================================
+PHASE 5 — IMAGE RESOLUTION EXPERIMENT
+==================================================
+
+Run controlled inference/training experiments with:
+
+640
+1024
+1280
+
+where GPU/CPU resources permit.
+
+Do not assume the largest resolution is automatically best.
+
+For each resolution record:
+
+- Precision
+- Recall
+- mAP50
+- mAP50-95
+- Mask IoU
+- small-object recall
+- inference latency
+- memory usage
+
+Generate:
+
+reports/resolution_comparison.csv
+
+Select the best configuration based on validation performance and practical runtime.
+
+==================================================
+PHASE 6 — SMALL OBJECT DETECTION
+==================================================
+
+Analyze object sizes.
+
+If many debris objects occupy a small portion of the sonar image, implement real SAHI/tiled inference.
+
+Initial experiments may include:
+
+Full image inference
+
+versus
+
+512×512 slices
+
+with controlled overlap.
+
+Benchmark:
+
+YOLO11-Seg full-image
+
+versus
+
+YOLO11-Seg + SAHI
+
+Measure:
+
+- small-object recall
+- precision
+- false positives
+- duplicate detections
+- mask quality
+- runtime
+
+IMPORTANT:
+
+The final application must only display:
+
+“SAHI ACTIVE”
+
+when SAHI is actually being used.
+
+Do not simulate SAHI.
+
+==================================================
+PHASE 7 — INFERENCE PARAMETER ANALYSIS
+==================================================
+
+Do a threshold sweep.
+
+Test confidence thresholds such as:
+
+0.30
+0.40
+0.50
+0.60
+0.70
+0.80
+
+Also evaluate appropriate IoU/NMS settings.
+
+Generate:
+
+Precision–Recall relationship
+
+and:
+
+False Positive vs Recall relationship.
+
+Do NOT select the lowest threshold because it produces more detections.
+
+Choose an operating point appropriate for the project's objective:
+
+Reliable candidate detection with controlled false positives.
+
+Document the selected threshold and why it was selected.
+
+==================================================
+PHASE 8 — SEGMENTATION PRECISION
+==================================================
+
+Inspect predicted masks.
+
+For each candidate determine:
+
+- mask area
+- bounding box area
+- mask-to-box ratio
+- boundary quality
+- overlap with ground truth
+- IoU
+
+Identify whether the model is:
+
+1. Over-segmenting
+2. Under-segmenting
+3. Including acoustic shadows
+4. Missing object boundaries
+5. Producing disconnected masks
+6. Producing masks shifted from the object
+
+If the mask is visually incorrect, do NOT hide the problem using frontend CSS.
+
+Fix the model/data/inference pipeline.
+
+==================================================
+PHASE 9 — HARD NEGATIVE TRAINING
+==================================================
+
+Identify common false positives.
+
+Examples may include:
+
+- natural rocks
+- seabed formations
+- sediment patterns
+- natural shadows
+- sonar artefacts
+- noise
+- vehicle-motion artefacts
+- low-contrast seabed structures
+
+Create a hard-negative dataset.
+
+The objective is:
+
+Teach the model:
+
+“Not every sonar structure is debris.”
+
+Do not artificially label natural objects as debris.
+
+==================================================
+PHASE 10 — AUGMENTATION
+==================================================
+
+Audit existing augmentation.
+
+Do not blindly increase augmentation.
+
+Test realistic sonar-compatible augmentation.
+
+Avoid transformations that create physically unrealistic sonar imagery.
+
+Evaluate whether augmentation improves:
+
+- recall
+- precision
+- small-object performance
+- generalization to unseen survey areas
+
+If augmentation hurts validation performance, revert it.
+
+Document the result.
+
+==================================================
+PHASE 11 — TRAINING EXPERIMENT
+==================================================
+
+Only after completing the previous experiments should you modify training.
+
+Start from the strongest validated configuration.
+
+Use:
+
+YOLO11-Seg pretrained initialization where appropriate.
+
+Use the dataset's actual class configuration.
+
+Tune:
+
+- imgsz
+- epochs
+- batch size
+- learning rate
+- augmentation
+- patience/early stopping
+- model size
+
+Do not make many changes simultaneously.
+
+Run controlled experiments.
+
+Every experiment gets an ID:
+
+EXP-001
+EXP-002
+EXP-003
+
+Store:
+
+configuration
+training results
+validation metrics
+weights
+observations
+
+Create:
+
+experiments/
+
+==================================================
+PHASE 12 — FALSE POSITIVE ANALYSIS
+==================================================
+
+Create a false-positive gallery.
+
+Every false positive should be categorized.
+
+Example:
+
+FP-001:
+Natural seabed texture
+
+FP-002:
+Acoustic artefact
+
+FP-003:
+Shadow-only detection
+
+FP-004:
+Rock formation
+
+FP-005:
+Noise
+
+Then identify patterns.
+
+Use those patterns to improve:
+
+dataset
+training
+preprocessing
+post-processing
+sonar evidence
+
+Do not simply increase confidence threshold without analysis.
+
+==================================================
+PHASE 13 — SONAR EVIDENCE ENGINE
+==================================================
+
+After the visual detector is improved, add supporting sonar evidence.
+
+For each candidate calculate where technically feasible:
+
+- acoustic shadow presence
+- shadow-to-target relationship
+- target intensity
+- target shape
+- local texture
+- surrounding seabed context
+
+The evidence engine is NOT another fake confidence number.
+
+Use interpretable outputs:
+
+Shadow:
+Strong / Moderate / Weak
+
+Seabed Context:
+Consistent / Ambiguous / Inconsistent
+
+Shape:
+Consistent / Ambiguous
+
+Do not claim that shadow evidence proves the object is debris.
+
+It is supporting evidence.
+
+==================================================
+PHASE 14 — NATURAL / MAN-MADE / UNKNOWN
+==================================================
+
+Introduce a decision layer:
+
+MAN-MADE LIKELY
+NATURAL LIKELY
+UNKNOWN
+
+Do not force uncertain candidates into a known debris class.
+
+Example:
+
+YOLO:
+Possible Debris — 78%
+
+Evidence:
+Weak
+
+Final interpretation:
+
+UNKNOWN / NEEDS REVIEW
+
+This is preferable to an incorrect confident classification.
+
+==================================================
+PHASE 15 — ECOLOGICAL RISK
+==================================================
+
+Only after detection and evidence are functioning, implement ecological-risk assessment.
+
+Risk should consider available information such as:
+
+- debris category
+- estimated size
+- persistence/hazard characteristics
+- environmental context
+- uncertainty
+
+The risk score is:
+
+RELATIVE PRIORITIZATION
+
+NOT:
+
+actual measured ecological damage.
+
+Do not present a fabricated scientific percentage.
+
+If the score is not validated:
+
+Risk:
+HIGH / MEDIUM / LOW / UNKNOWN
+
+with:
+
+“Prototype assessment — requires domain validation.”
+
+==================================================
+PHASE 16 — REMOVAL PRIORITY
+==================================================
+
+Implement:
+
+CRITICAL
+HIGH
+MEDIUM
+LOW
+REVIEW
+
+Priority should use documented rules or a transparent scoring system.
+
+Keep risk and priority separate:
+
+ECOLOGICAL RISK:
+“How potentially harmful is this?”
+
+REMOVAL PRIORITY:
+“How urgently should field resources inspect/remove it?”
+
+Do not claim the priority model is scientifically validated unless it has been validated.
+
+==================================================
+PHASE 17 — HUMAN-IN-THE-LOOP
+==================================================
+
+Every important candidate must support:
+
+CONFIRM
+REJECT
+UNKNOWN
+
+Before verification:
+
+Possible Debris
+
+After confirmation:
+
+Confirmed Debris
+
+After rejection:
+
+Rejected Candidate
+
+After uncertainty:
+
+Unknown / Needs Review
+
+Never automatically convert:
+
+YOLO detection → Confirmed debris.
+
+==================================================
+PHASE 18 — GEOLOCATION
+==================================================
+
+Implement:
+
+Detection pixel coordinates
+↓
+Sonar geometry
+↓
+Range / bearing
+↓
+GNSS/GPS + heading/navigation
+↓
+Estimated target coordinate
+↓
+GIS
+
+GPS alone must NOT be presented as the target's exact position.
+
+For simulated telemetry:
+
+SIMULATED GNSS
+
+must be visible.
+
+For estimated coordinates:
+
+ESTIMATED POSITION
+
+must be visible.
+
+==================================================
+PHASE 19 — UI DATA HONESTY
+==================================================
+
+Audit the existing dashboard.
+
+Remove any fabricated values.
+
+Never fabricate:
+
+- segmentation quality
+- physics verification percentage
+- ecological risk percentage
+- reliability percentage
+- GPS accuracy
+- FPS
+- inference latency
+- model accuracy
+- mAP
+- detection count
+
+Only display measured backend values.
+
+If a value is unavailable:
+
+N/A
+Not measured
+Simulated
+Estimated
+
+Use:
+
+Model Confidence
+
+not:
+
+Model Accuracy
+
+==================================================
+PHASE 20 — BEFORE / AFTER BENCHMARK
+==================================================
+
+The final report MUST contain:
+
+BASELINE
+
+versus
+
+FINAL SYSTEM
+
+Example:
+
+Metric | Baseline | Final | Change
+
+Precision
+Recall
+mAP50
+mAP50-95
+Mask IoU
+False positives/image
+Small-object recall
+Latency
+
+Do not invent numbers.
+
+If no improvement occurs, report that honestly.
+
+If one experiment improves recall but hurts precision, show that tradeoff.
+
+==================================================
+PHASE 21 — REGRESSION TEST
+==================================================
+
+Create a fixed regression set.
+
+Every future model update must be tested against it.
+
+The system must detect regressions such as:
+
+- previously detected debris disappearing
+- masks becoming worse
+- false positives increasing
+- coordinate transformations breaking
+- SAHI duplicates appearing
+- class mapping changing
+
+Do not allow a new model to replace the previous best model unless it improves the agreed evaluation criteria.
+
+==================================================
+PHASE 22 — FINAL APPLICATION INTEGRATION
+==================================================
+
+Only after the model pipeline is validated:
+
+Integrate into FastAPI.
+
+Endpoint:
+
+POST /api/inference
+
+Return actual:
+
+- candidate ID
+- class
+- confidence
+- segmentation mask
+- bounding box
+- evidence
+- priority
+- status
+- estimated location
+
+Frontend:
+
+React + TypeScript + Vite
+Tailwind CSS
+MapLibre GL JS
+
+Backend:
+
+Python 3.11
+FastAPI
+
+AI:
+
+PyTorch
+Ultralytics YOLO11-Seg
+SAHI
+
+CV:
+
+OpenCV
+NumPy
+SciPy
+
+Database:
+
+PostgreSQL
+PostGIS
+
+Vector/RAG layer:
+
+PostgreSQL + pgvector
+
+==================================================
+PHASE 23 — RAG INTEGRATION
+==================================================
+
+RAG must NOT modify the image segmentation directly.
+
+Architecture:
+
+YOLO11-Seg
+↓
+Candidate
+↓
+Sonar Evidence
+↓
+RAG Knowledge Retrieval
+↓
+Scientific/Environmental Context
+↓
+Risk / Priority Explanation
+↓
+Human Verification
+
+RAG knowledge sources should prioritize:
+
+- authoritative government sources
+- NOAA
+- FAO
+- MoES/NIOT material where appropriate
+- peer-reviewed marine research
+- validated internal project knowledge
+
+RAG should answer:
+
+“Why might this candidate matter?”
+
+NOT:
+
+“Did YOLO definitely detect debris?”
+
+If evidence is insufficient:
+
+“Insufficient evidence — human review required.”
+
+RAG must provide source attribution for its explanations.
+
+==================================================
+PHASE 24 — FINAL UI
+==================================================
+
+The UI should communicate:
+
+UPLOAD
+↓
+DETECT
+↓
+SONAR EVIDENCE
+↓
+INTERPRET
+↓
+RISK
+↓
+PRIORITIZE
+↓
+HUMAN REVIEW
+↓
+GEOLOCATE
+↓
+GIS
+↓
+CLEANUP TRACKING
+
+Main screen:
+
+LEFT:
+Mission + data input
+
+CENTER:
+Large sonar image
+
+RIGHT:
+Candidate assessment
+
+Candidate assessment:
+
+Target ID
+Class
+Model Confidence
+Sonar Evidence
+Anthropogenic Likelihood
+Ecological Risk
+Removal Priority
+Human Decision
+
+Bottom:
+
+Review History
+Detected Objects
+Workflow Status
+
+==================================================
+PHASE 25 — FINAL CLEANUP TRACKING
+==================================================
+
+Support the lifecycle:
+
+Detected
+↓
+Verified
+↓
+Assigned
+↓
+Removal in Progress
+↓
+Removed
+↓
+Clearance Verified
+
+For the current MVP, it is acceptable for later stages to be marked:
+
+Planned / Future Phase
+
+Do not fake a real removal operation.
+
+==================================================
+CRITICAL RULES
+==================================================
+
+RULE 1:
+Never fabricate model results.
+
+RULE 2:
+Never fabricate metrics.
+
+RULE 3:
+Never manually place detection boxes to make the demo look better.
+
+RULE 4:
+Never lower confidence thresholds solely to increase detections.
+
+RULE 5:
+Never call model confidence “accuracy”.
+
+RULE 6:
+Never claim GPS gives exact debris coordinates.
+
+RULE 7:
+Never classify every anomaly as debris.
+
+RULE 8:
+Never include YOLO11-OBB.
+
+RULE 9:
+Never introduce another neural network without demonstrating why it is necessary.
+
+RULE 10:
+Never destroy acoustic-shadow information through preprocessing.
+
+RULE 11:
+Never train on incorrectly labelled masks.
+
+RULE 12:
+Never use adjacent sonar frames across train/validation if that causes data leakage.
+
+RULE 13:
+Never replace a better validated model with a visually better but statistically worse model.
+
+RULE 14:
+Keep real inference separate from DEMO MODE.
+
+RULE 15:
+If the current model is fundamentally limited by dataset quality, report:
+
+“Dataset limitation”
+
+rather than pretending a parameter change solved the problem.
+
+==================================================
+FINAL DELIVERABLES
+==================================================
+
+Produce:
+
+1. docs/MODEL_AUDIT.md
+2. docs/DATASET_AUDIT.md
+3. docs/EXPERIMENT_LOG.md
+4. reports/baseline_metrics.json
+5. reports/final_metrics.json
+6. reports/comparison.csv
+7. false-positive gallery
+8. fixed regression dataset
+9. validated YOLO11-Seg weights
+10. validated inference pipeline
+11. SAHI implementation if benchmark proves useful
+12. sonar evidence module
+13. HITL workflow
+14. geolocation module
+15. RAG evidence layer
+16. updated dashboard
+17. API documentation
+
+==================================================
+MOST IMPORTANT INSTRUCTION
+==================================================
+
+DO NOT TRY TO COMPLETE EVERYTHING IN ONE STEP.
+
+Work sequentially.
+
+After each phase:
+
+1. Run the relevant tests.
+2. Record the result.
+3. Explain what was discovered.
+4. Only proceed when the phase is successful.
+
+If a phase reveals that the real problem is the dataset rather than the model, STOP and report that finding.
+
+If a proposed change does not improve validation performance, REVERT IT.
+
+The final objective is not:
+
+“Make the dashboard show more detections.”
+
+The objective is:
+
+“Make YOLO11-Seg identify and segment genuine underwater debris candidates more accurately, with fewer false positives and better small-target performance, and provide measurable evidence that the final pipeline is better than the baseline.”
+
+Start with PHASE 0 — REPOSITORY AUDIT.
+Do not modify code yet.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-09-17T17:54:03+05:30.
+</ADDITIONAL_METADATA>
+<USER_SETTINGS_CHANGE>
+The user changed setting `Model Selection` from None to Claude Sonnet 4.6 (Thinking). No need to comment on this change if the user doesn't ask about it. If reporting what model you are, please use a human readable name instead of the exact string.
+</USER_SETTINGS_CHANGE>

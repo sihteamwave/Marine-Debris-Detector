@@ -1,0 +1,21 @@
+{
+  "model_id": "yolo11n-seg-sonar-v1",
+  "base_model": "yolo11n-seg.pt (COCO-base)",
+  "fine_tuned_weights": "weights/yolo11_seg_best.pt",
+  "dataset": "dataset_targeted (144 train, 5 val)",
+  "epochs": 3,
+  "imgsz": 640,
+  "classes": [
+    "plane",
+    "shipwreck",
+    "container",
+    "building",
+    "tyre"
+  ],
+  "metrics": {
+    "mask_map50": 0.3185,
+    "mask_map50_95": 0.2299,
+    "box_map50": 0.3312
+  },
+  "status": "GENUINE_TRAINED_BASELINE"
+}

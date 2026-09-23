@@ -4,22 +4,30 @@ import 'leaflet/dist/leaflet.css';
 import { Layers, ZoomIn, ZoomOut, Compass } from 'lucide-react';
 
 interface GisMiniMapProps {
-  currentTarget: {
+  currentTarget?: {
     id: string;
     class: string;
     confidence: number;
     status: string;
     position: { lat: string; lon: string };
     heading?: string;
+    location_status?: string;
+    location_note?: string;
+    telemetry_source?: string;
   };
+  target?: any;
   allTargets?: Array<{
     id: string;
     class: string;
     confidence: number;
     position: { lat: string; lon: string };
+    location_status?: string;
+    telemetry_source?: string;
   }>;
   selectedTargetIdx?: number;
   onSelectTarget?: (index: number) => void;
+  className?: string;
+  onExpand?: () => void;
 }
 
 // Coordinate string parser: "7.8220° N" -> 7.8220
@@ -54,11 +62,21 @@ const MAP_LAYERS = [
 ];
 
 export const GisMiniMap: React.FC<GisMiniMapProps> = ({
-  currentTarget,
+  currentTarget: propCurrentTarget,
+  target,
   allTargets = [],
   selectedTargetIdx = 0,
-  onSelectTarget
+  onSelectTarget,
+  className = '',
+  onExpand
 }) => {
+  const currentTarget = propCurrentTarget || target || {
+    id: 'TGT-001',
+    class: 'Target',
+    confidence: 0.9,
+    status: 'Pending',
+    position: { lat: '7.8220° N', lon: '77.4847° E' }
+  };
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
@@ -245,7 +263,11 @@ export const GisMiniMap: React.FC<GisMiniMapProps> = ({
 
     L.marker([lat, lon], { icon: activePinIcon, zIndexOffset: 1000 }).addTo(markersGroup);
 
-    // 7. Detection Pin Callout Card (matching reference layout precisely)
+    // 7. Detection Pin Callout Card with honest geolocation uncertainty & telemetry provenance (Gap 8)
+    const locStatus = currentTarget.location_status || 'ESTIMATED';
+    const telemSource = currentTarget.telemetry_source || 'SIMULATED TELEMETRY';
+    const locNote = currentTarget.location_note || 'Position uncertainty unavailable';
+
     const calloutIcon = L.divIcon({
       className: 'pin-callout-card',
       html: `
@@ -258,13 +280,18 @@ export const GisMiniMap: React.FC<GisMiniMapProps> = ({
           <div class="text-slate-300 font-mono text-[9px] mt-0.5">
             Lat: ${currentTarget.position.lat}, ${currentTarget.position.lon}
           </div>
-          <div class="text-cyan-400/90 font-mono text-[8px] mt-0.5 uppercase tracking-wide">
-            Indian Ocean Survey Sector
+          <div class="text-amber-400/90 font-mono text-[8px] mt-0.5 uppercase tracking-wide flex items-center gap-1">
+            <span class="px-1 py-0.2 rounded bg-amber-950/80 border border-amber-600/40 text-amber-300 font-semibold">${locStatus}</span>
+            <span>•</span>
+            <span class="text-slate-300">${telemSource}</span>
+          </div>
+          <div class="text-slate-400 font-mono text-[7.5px] mt-0.5 max-w-[200px] truncate" title="${locNote}">
+            ${locNote}
           </div>
         </div>
       `,
-      iconSize: [180, 48],
-      iconAnchor: [-8, 24]
+      iconSize: [210, 60],
+      iconAnchor: [-8, 30]
     });
 
     L.marker([lat, lon], { icon: calloutIcon, interactive: false, zIndexOffset: 900 }).addTo(markersGroup);
@@ -285,24 +312,24 @@ export const GisMiniMap: React.FC<GisMiniMapProps> = ({
   };
 
   return (
-    <div className="h-48 w-full rounded-lg relative overflow-hidden border border-[#173053] bg-[#071324] select-none shadow-inner">
+    <div className={`w-full rounded-xl relative overflow-hidden border border-white/[0.08] bg-surface-container-lowest select-none shadow-sm ${className || 'h-48'}`}>
       {/* Real Leaflet Map Container */}
       <div ref={mapContainerRef} className="w-full h-full z-0" />
 
-      {/* Top-Left Tactical Zoom Buttons (+ / −) matching reference layout */}
-      <div className="absolute top-2 left-2 flex flex-col bg-[#0b1b32]/95 border border-[#1f3f68] rounded shadow-lg z-10 overflow-hidden">
+      {/* Top-Left Tactical Zoom Buttons (+ / −) */}
+      <div className="absolute top-2 left-2 flex flex-col bg-surface-container-high/90 backdrop-blur-md border border-white/[0.08] rounded-lg shadow-md z-10 overflow-hidden">
         <button
           onClick={handleZoomIn}
           title="Zoom In"
-          className="w-5 h-5 text-xs text-slate-200 hover:bg-[#163359] hover:text-white flex items-center justify-center font-bold transition-colors"
+          className="w-6 h-6 text-xs text-slate-200 hover:bg-white/10 hover:text-white flex items-center justify-center font-bold transition-colors cursor-pointer"
         >
           +
         </button>
-        <div className="h-px bg-[#1f3f68]"></div>
+        <div className="h-px bg-white/[0.08]"></div>
         <button
           onClick={handleZoomOut}
           title="Zoom Out"
-          className="w-5 h-5 text-xs text-slate-200 hover:bg-[#163359] hover:text-white flex items-center justify-center font-bold transition-colors"
+          className="w-6 h-6 text-xs text-slate-200 hover:bg-white/10 hover:text-white flex items-center justify-center font-bold transition-colors cursor-pointer"
         >
           −
         </button>
@@ -312,7 +339,7 @@ export const GisMiniMap: React.FC<GisMiniMapProps> = ({
       <button
         onClick={handleRecenter}
         title="Recenter On Target"
-        className="absolute bottom-2 right-2 z-10 w-6 h-6 rounded bg-[#0b1b32]/95 hover:bg-[#163359] border border-[#1f3f68] text-sky-400 flex items-center justify-center shadow-lg transition-all"
+        className="absolute bottom-2 right-2 z-10 w-7 h-7 rounded-xl bg-surface-container-high/90 backdrop-blur-md hover:bg-white/10 border border-white/[0.08] text-secondary flex items-center justify-center shadow-lg transition-all cursor-pointer"
       >
         <Compass className="w-3.5 h-3.5" />
       </button>
@@ -321,16 +348,16 @@ export const GisMiniMap: React.FC<GisMiniMapProps> = ({
       <div className="absolute top-2 right-2 z-10">
         <button
           onClick={() => setShowLayerMenu(!showLayerMenu)}
-          className="px-2 py-0.5 rounded bg-[#f8fafc] hover:bg-white text-slate-900 border border-slate-300 font-semibold text-[10px] shadow-md flex items-center gap-1 transition-all active:scale-95"
+          className="px-2.5 py-1 rounded-xl bg-surface-container-highest/90 backdrop-blur-md hover:bg-surface-bright text-slate-200 border border-white/[0.1] font-medium text-[10px] font-mono shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
           title="Switch Map Layer (Satellite / Seabed / Tactical)"
         >
-          <Layers className="w-3 h-3 text-slate-700" />
+          <Layers className="w-3 h-3 text-secondary" />
           <span>{MAP_LAYERS[activeLayerIdx].name}</span>
         </button>
 
         {showLayerMenu && (
-          <div className="absolute right-0 top-7 w-48 bg-[#0a182d] border border-sky-500/50 rounded-lg shadow-2xl p-1 z-30 space-y-1">
-            <div className="px-2 py-1 text-[9px] font-mono uppercase text-slate-400 font-bold border-b border-[#162e50]">
+          <div className="absolute right-0 top-8 w-48 bg-surface-container-low/95 backdrop-blur-2xl border border-white/[0.12] rounded-xl shadow-2xl p-1 z-30 space-y-0.5">
+            <div className="px-2 py-1 text-[9px] font-mono uppercase text-outline font-bold border-b border-white/[0.06]">
               GIS Basemap Layers
             </div>
             {MAP_LAYERS.map((layer, idx) => (
@@ -340,24 +367,27 @@ export const GisMiniMap: React.FC<GisMiniMapProps> = ({
                   setActiveLayerIdx(idx);
                   setShowLayerMenu(false);
                 }}
-                className={`w-full text-left px-2 py-1.5 rounded text-xs flex items-center justify-between transition-colors ${
+                className={`w-full text-left px-2 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors cursor-pointer ${
                   idx === activeLayerIdx
-                    ? 'bg-blue-600 text-white font-bold'
-                    : 'text-slate-300 hover:bg-[#132c4e]'
+                    ? 'bg-primary-container text-white font-semibold'
+                    : 'text-slate-300 hover:bg-white/[0.05]'
                 }`}
               >
                 <span>{layer.name}</span>
-                {idx === activeLayerIdx && <span className="text-[10px]">✓</span>}
+                {idx === activeLayerIdx && <span className="text-[10px] text-secondary">✓</span>}
               </button>
             ))}
           </div>
         )}
       </div>
 
-      {/* Subtle coordinate overlay footer */}
-      <div className="absolute bottom-1 left-2 z-10 pointer-events-none">
-        <span className="text-[9px] font-mono text-slate-400/90 bg-[#050e1c]/80 px-1.5 py-0.5 rounded border border-[#162e50]">
+      {/* Subtle coordinate overlay footer with honest telemetry badge */}
+      <div className="absolute bottom-1.5 left-2 z-10 pointer-events-none flex items-center gap-1.5">
+        <span className="text-[9px] font-mono text-on-surface-variant bg-surface-container-low/90 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/[0.06]">
           GIS: WGS 84 / UTM 43N
+        </span>
+        <span className="text-[9px] font-mono text-amber-300 bg-amber-500/10 backdrop-blur-sm px-2 py-0.5 rounded-full border border-amber-500/20">
+          {currentTarget?.telemetry_source || 'SIMULATED TELEMETRY'}
         </span>
       </div>
     </div>

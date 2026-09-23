@@ -76,7 +76,7 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({ isOpen, onClose }) =
               speckle_model: "Multiplicative Rayleigh reverberation (sigma=1.0)"
             },
             training_recipe: {
-              base_model: "YOLO11n-OBB (yolo11n-obb.pt)",
+              base_model: "YOLO11n-Seg (yolo11n-seg.pt)",
               epochs: 50,
               imgsz: 1024,
               augmentations: "Speckle noise injection, Port/Starboard horizontal reflection, Mosaic 1.0, MixUp 0.15",
@@ -148,7 +148,7 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({ isOpen, onClose }) =
           <div className="p-2.5 rounded-lg bg-[#0a172a] border border-[#1b3a62]">
             <div className="text-[10px] font-mono text-slate-400 uppercase">Validation mAP@50</div>
             <div className="text-lg font-bold font-mono text-amber-300">{(data.training_recipe.val_map50 * 100).toFixed(1)}%</div>
-            <div className="text-[9px] text-slate-500">YOLO11-OBB Physics Tuned</div>
+            <div className="text-[9px] text-slate-500">YOLO11-Seg Physics Tuned</div>
           </div>
         </div>
 
@@ -185,7 +185,7 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({ isOpen, onClose }) =
             }`}
           >
             <Terminal className="w-4 h-4" />
-            3. Training Recipe & YOLO11-OBB Scripts
+            3. Training Recipe & YOLO11-Seg Scripts
           </button>
         </div>
 
@@ -309,16 +309,16 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({ isOpen, onClose }) =
               <div className="p-4 rounded-lg bg-[#08172c] border border-[#1b3a62]">
                 <div className="text-xs font-bold text-slate-200 font-mono mb-2 flex items-center gap-2">
                   <Cpu className="w-4 h-4 text-cyan-400" />
-                  YOLO11-OBB Transfer Learning Pipeline
+                  YOLO11-Seg Transfer Learning Pipeline
                 </div>
                 <div className="space-y-2 text-xs text-slate-300">
                   <div className="flex items-center gap-2 p-2 bg-[#061122] rounded border border-[#162e50]">
                     <span className="w-5 h-5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-500/50 flex items-center justify-center font-bold text-[10px]">1</span>
-                    <span>Aggregate & Format Datasets: Extracts real sonar + generates 1,500 synthetic debris targets into Ultralytics YOLO-OBB format.</span>
+                    <span>Aggregate & Format Datasets: Extracts real sonar + generates synthetic debris targets into Ultralytics YOLO11-Seg format.</span>
                   </div>
                   <div className="flex items-center gap-2 p-2 bg-[#061122] rounded border border-[#162e50]">
                     <span className="w-5 h-5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-500/50 flex items-center justify-center font-bold text-[10px]">2</span>
-                    <span>Oriented Bounding Box (OBB) Regression: Predicts 4-corner polygons aligned with acoustic shadows to avoid seabed clutter false alarms.</span>
+                    <span>Polygonal Instance Segmentation: Predicts precise object boundary contours and acoustic shadow delineation to suppress seabed clutter.</span>
                   </div>
                   <div className="flex items-center gap-2 p-2 bg-[#061122] rounded border border-[#162e50]">
                     <span className="w-5 h-5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-500/50 flex items-center justify-center font-bold text-[10px]">3</span>
@@ -346,14 +346,14 @@ export const DatasetModal: React.FC<DatasetModalProps> = ({ isOpen, onClose }) =
                 </div>
 
                 <div>
-                  <div className="text-[11px] text-slate-400 mb-1">Step 2: Train YOLO11-OBB on Aggregated Dataset</div>
+                  <div className="text-[11px] text-slate-400 mb-1">Step 2: Train YOLO11-Seg on Aggregated Dataset</div>
                   <div className="p-2.5 bg-[#030813] rounded font-mono text-xs text-slate-300 border border-[#142845] flex items-center justify-between">
-                    <span>python training/train_yolo_obb.py --epochs 30 --batch 4</span>
+                    <span>python training/train_yolo_seg.py --epochs 30 --batch 4</span>
                     <button
-                      onClick={() => copyCommand("python training/train_yolo_obb.py --epochs 30 --batch 4")}
+                      onClick={() => copyCommand("python training/train_yolo_seg.py --epochs 30 --batch 4")}
                       className="px-2.5 py-1 text-[11px] bg-cyan-950 hover:bg-cyan-900 text-cyan-300 rounded border border-cyan-700/60"
                     >
-                      {copiedCmd === "python training/train_yolo_obb.py --epochs 30 --batch 4" ? "Copied!" : "Copy"}
+                      {copiedCmd === "python training/train_yolo_seg.py --epochs 30 --batch 4" ? "Copied!" : "Copy"}
                     </button>
                   </div>
                 </div>

@@ -15,7 +15,7 @@ import numpy as np
 from pathlib import Path
 from ultralytics import YOLO
 
-ROOT = Path(r"C:\Users\Mantra\OneDrive\Desktop\SIH PROTOTYPE")
+ROOT = Path(__file__).parent.parent.resolve()
 SRC_DATASET = ROOT / "dataset_sih26057"
 TARGET_DATASET = ROOT / "dataset_targeted"
 
@@ -140,9 +140,9 @@ def train_plane_shipwreck_deep(yaml_path, epochs=12, batch=8, imgsz=640):
     print("=" * 70)
 
     # Start from already fine-tuned weights
-    starting_weights = ROOT / "weights" / "yolo11_sonar_best.pt"
+    starting_weights = ROOT / "weights" / "yolo11_seg_best.pt"
     if not starting_weights.exists():
-        starting_weights = ROOT / "yolo11n-obb.pt"
+        starting_weights = ROOT / "yolo11n-seg.pt"
 
     print(f"Loading Stage 1 Checkpoint: {starting_weights}")
     model = YOLO(str(starting_weights))
@@ -154,6 +154,7 @@ def train_plane_shipwreck_deep(yaml_path, epochs=12, batch=8, imgsz=640):
         batch=batch,
         device="cpu",
         workers=0,
+        task="segment",
         optimizer="AdamW",
         lr0=0.0008,          # Fine-tuning lower learning rate to preserve learned features
         lrf=0.015,
@@ -162,7 +163,7 @@ def train_plane_shipwreck_deep(yaml_path, epochs=12, batch=8, imgsz=640):
         cls=2.0,             # Strong classification penalty for debris classes
         degrees=45.0,
         fliplr=0.5,
-        flipud=0.5,
+        flipud=0.0,          # Preserves acoustic time-of-flight direction
         mosaic=0.7,
         mixup=0.1,
         save=True,
@@ -173,17 +174,19 @@ def train_plane_shipwreck_deep(yaml_path, epochs=12, batch=8, imgsz=640):
 
     print("\nEvaluating Stage 2 Validation Metrics...")
     metrics = model.val()
-    print(f"mAP@50 (OBB): {metrics.box.map50:.4f}")
-    print(f"mAP@50-95   : {metrics.box.map:.4f}")
+    if hasattr(metrics, 'seg') and metrics.seg is not None:
+        print(f"mAP@50 (Mask): {metrics.seg.map50:.4f}")
+        print(f"mAP@50-95 (Mask): {metrics.seg.map:.4f}")
+    if hasattr(metrics, 'box') and metrics.box is not None:
+        print(f"mAP@50 (Box): {metrics.box.map50:.4f}")
+        print(f"mAP@50-95 (Box): {metrics.box.map:.4f}")
 
     best_pt = ROOT / "runs_targeted_stage2" / "deep_plane_wreck" / "weights" / "best.pt"
-    dest_pt = ROOT / "weights" / "yolo11_sonar_best.pt"
+    dest_pt = ROOT / "weights" / "yolo11_seg_best.pt"
     if best_pt.exists():
         shutil.copy(best_pt, dest_pt)
-        shutil.copy(best_pt, ROOT / "yolo11n-obb.pt")
         print(f"\n[SUCCESS] Stage 2 Best Weights Saved:")
         print(f"  -> {dest_pt}")
-        print(f"  -> {ROOT / 'yolo11n-obb.pt'}")
     return results
 
 

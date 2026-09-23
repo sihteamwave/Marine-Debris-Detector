@@ -1,0 +1,280 @@
+{
+  "knowledge_base_version": "2.0.0-government",
+  "storage_tier": "LOCAL_OFFLINE_KNOWLEDGE",
+  "last_updated": "2026-09-23T00:00:00Z",
+  "authority_domains": [
+    "International Hydrographic Organization (IHO)",
+    "Ministry of Earth Sciences (MoES) / NCCR",
+    "Directorate General of Shipping / Merchant Shipping Act",
+    "Indian Coast Guard (ICG) / Marine Environment Protection",
+    "Central Pollution Control Board (CPCB) / MoEFCC",
+    "International Maritime Organization (IMO) / MARPOL",
+    "Food and Agriculture Organization (FAO) / GGGI",
+    "National Oceanic and Atmospheric Administration (NOAA)"
+  ],
+  "documents": [
+    {
+      "source_id": "SRC-IHO-S44-ED620",
+      "title": "IHO Standards for Hydrographic Surveys (Edition 6.2.0, October 2024)",
+      "organization": "International Hydrographic Organization (IHO)",
+      "authority": "Hydrographic Standards and Services Committee (HSSC)",
+      "publication_date": "2024-10-01",
+      "version": "Edition 6.2.0",
+      "jurisdiction": "International Hydrographic Waters / S-44 Standard",
+      "topic": "Hydrographic Survey Standards, Feature Detection & Total Uncertainty Bounds",
+      "debris_type": "Navigational Obstruction / All Targets",
+      "debris_family": "NAVIGATIONAL_HAZARD",
+      "impact_mechanisms": [
+        "Order 1a requirement: Total Horizontal Uncertainty (THU) <= 5m + 5% of water depth at 95% confidence level",
+        "Order 1a requirement: Total Vertical Uncertainty (TVU) <= sqrt(0.5^2 + (0.013 * depth)^2)",
+        "Mandatory feature detection: Detection of cubic features > 2m in depths up to 40m, or 10% of depth in deeper water",
+        "Mandatory sound velocity profile (SVP) calibration and acoustic ray-tracing refraction correction"
+      ],
+      "material_degradation_profile": "Standard hydrographic survey benchmark; defines statutory survey quality tiers from Special Order (harbors) to Order 2 (offshore).",
+      "recommended_mitigation": "Flag any candidate within 15m of surface in navigable water as HAZNAV; conduct orthogonal verification swath prior to nautical chart update.",
+      "source_reference": "IHO S-44 Standards for Hydrographic Surveys, Edition 6.2.0 (October 2024); IHO Hydrographic Dictionary S-32"
+    },
+    {
+      "source_id": "SRC-MOES-NCCR-LITTER-2022",
+      "title": "National Marine Litter Assessment & Monitoring Protocol for Indian Coastal Waters",
+      "organization": "Ministry of Earth Sciences (MoES) / National Centre for Coastal Research (NCCR)",
+      "authority": "MoES Marine Litter Directorate, Government of India",
+      "publication_date": "2022-09-17",
+      "version": "v2.0-GovIndia",
+      "jurisdiction": "Territorial Waters & EEZ of India (7,516 km Coastline)",
+      "topic": "Benthic Marine Litter Density, Classification & Ecological Risk Assessment",
+      "debris_type": "Plastic / Ghost Net / General Marine Litter",
+      "debris_family": "DISCARDED_GEAR",
+      "impact_mechanisms": [
+        "High benthic accumulation of polymer fishing gear and macro-plastics along peninsular Indian shelf",
+        "Ecological vulnerability index prioritization for Gulf of Mannar Biosphere Reserve, Palk Bay, and Andaman coral reefs",
+        "Benthic smothering and physical abrasion of coral polyps and endangered dugong feeding grounds",
+        "Fragmentation into bioavailable microplastics entering Indian coastal commercial fisheries"
+      ],
+      "material_degradation_profile": "Synthetic polymers (nylon, polypropylene, HDPE); benthic half-life 400-600 years without solar photodegradation.",
+      "recommended_mitigation": "Non-destructive ROV recovery in Marine Protected Areas; coordinate with state fisheries departments for ghost net buy-back logging.",
+      "source_reference": "NCCR-MoES Technical Report on Marine Litter in Coastal Waters of India (2022); Swachh Sagar Surakshit Sagar Campaign Baseline"
+    },
+    {
+      "source_id": "SRC-DGSHIPPING-MERCHANT-ACT-1958",
+      "title": "Merchant Shipping Act, 1958 — Part XIII: Wreck, Salvage and Navigational Safety",
+      "organization": "Directorate General of Shipping / Ministry of Ports, Shipping and Waterways",
+      "authority": "Government of India Statutory Maritime Authority",
+      "publication_date": "1958-10-30",
+      "version": "Amended 2023",
+      "jurisdiction": "Indian Territorial Waters, Port Approaches & Traffic Separation Schemes",
+      "topic": "Statutory Reporting of Wrecks, Lost Cargo Containers, and Notice to Mariners (NOTMAR)",
+      "debris_type": "Container / Shipwreck",
+      "debris_family": "CONTAINER_CARGO",
+      "impact_mechanisms": [
+        "Statutory duty of Receiver of Wreck to investigate and secure all submerged wrecks and lost cargo",
+        "Mandatory immediate broadcast of Navigational Warnings (NOTMAR / NAVAREA VIII) for obstructions with Under-Keel Clearance < 14.5m in shipping lanes",
+        "Liability and salvage rights assignment under Maritime Salvage Convention and Indian Admiralty Jurisdiction Act 2017",
+        "Shipowner liability for removal of wrecks and lost containerized cargo obstructing navigation"
+      ],
+      "material_degradation_profile": "Statutory legal framework; mandates formal inter-agency clearance before closing an incident.",
+      "recommended_mitigation": "Issue draft NOTMAR to NHO Dehradun and Coastal Radio Stations; notify Port Captain / VTS operator for immediate navigation broadcast.",
+      "source_reference": "Merchant Shipping Act, 1958 (Act No. 44 of 1958), Sections 390-404; Indian Admiralty (Jurisdiction and Settlement of Maritime Claims) Act, 2017"
+    },
+    {
+      "source_id": "SRC-ICG-NOSDCP-2023",
+      "title": "National Oil Spill Disaster Contingency Plan (NOS-DCP) & Marine Pollution Response Protocol",
+      "organization": "Indian Coast Guard (ICG)",
+      "authority": "Directorate of Marine Environment, Coast Guard Headquarters",
+      "publication_date": "2023-04-15",
+      "version": "NOS-DCP Edition 2023",
+      "jurisdiction": "Exclusive Economic Zone of India",
+      "topic": "Marine Pollution Emergency Response for Hazardous Containers, Chemical Drums, and Fuel Bunkers",
+      "debris_type": "Container / Drum / Shipwreck",
+      "debris_family": "CONTAINER_CARGO",
+      "impact_mechanisms": [
+        "Tier 1 (Local port) to Tier 3 (National emergency) response protocol for hazardous submerged cargo breach",
+        "Hydrocarbon leakage from sunken vessel bunker fuel tanks causing slick migration toward coastal mangrove estuaries",
+        "Chemical drum rupture and toxic plume dispersion requiring underwater acoustic exclusion zone"
+      ],
+      "material_degradation_profile": "Steel container/drum structural integrity assessment; galvanic corrosion rate 0.1-0.2 mm/year in warm tropical coastal waters.",
+      "recommended_mitigation": "Dispatch Pollution Control Vessel (ICGS Samudra Prahari / ICGS Samudra Paheridar); deploy containment booms if surface sheen detected.",
+      "source_reference": "ICG NOS-DCP Manual (2023); National Disaster Management Plan for Marine Chemical & Oil Emergencies"
+    },
+    {
+      "source_id": "SRC-CPCB-PLASTIC-RULES-2024",
+      "title": "Guidelines for Marine Litter & Ghost Gear Remediation under Plastic Waste Management Rules",
+      "organization": "Central Pollution Control Board (CPCB) / MoEFCC",
+      "authority": "Hazardous Waste & Plastic Management Division, Government of India",
+      "publication_date": "2024-02-10",
+      "version": "PWM-ML-2024",
+      "jurisdiction": "Coastal States & Union Territories of India",
+      "topic": "Extended Producer Responsibility (EPR) & Environmentally Sound Salvage of Marine Synthetic Waste",
+      "debris_type": "Ghost Net / Tyre / Polymer Debris",
+      "debris_family": "DISCARDED_GEAR",
+      "impact_mechanisms": [
+        "Tracking of end-of-life fishing gear under Extended Producer Responsibility (EPR) framework",
+        "Protocol for onshore decontamination, sorting, and co-processing in cement kilns or mechanical recycling",
+        "Mandatory geocoding and weight estimation for municipal and state maritime board salvage logs"
+      ],
+      "material_degradation_profile": "Polyamide (nylon 6, nylon 66) and vulcanized rubber; thermal recycling and pyrolysis viability standards.",
+      "recommended_mitigation": "Generate CPCB-compliant Salvage Manifest with estimated tonnage, polymer type, and authorized coastal recycling partner ID.",
+      "source_reference": "CPCB Guidelines on Plastic Waste Management (2021/2024 Amendments); Environment (Protection) Act, 1986"
+    },
+    {
+      "source_id": "SRC-MARITIME-ZONES-ACT-1976",
+      "title": "Territorial Waters, Continental Shelf, EEZ and Other Maritime Zones Act, 1976",
+      "organization": "Parliament of India / Ministry of External Affairs",
+      "authority": "Government of India Sovereign Maritime Law",
+      "publication_date": "1976-08-25",
+      "version": "Act No. 80 of 1976",
+      "jurisdiction": "Sovereign Maritime Zones of India",
+      "topic": "Sovereign Jurisdiction over Seabed Exploration, Underwater Cultural Heritage, and Debris Removal",
+      "debris_type": "Shipwreck / Plane / Submerged Installation",
+      "debris_family": "SUNKEN_VESSEL",
+      "impact_mechanisms": [
+        "Exclusive sovereign rights to explore, exploit, conserve and manage seabed resources across the 200 nautical mile EEZ",
+        "Jurisdiction to protect and preserve the marine environment and prevent oceanic pollution",
+        "Protection of historic shipwrecks and underwater cultural heritage in contiguous and continental shelf zones"
+      ],
+      "material_degradation_profile": "Constitutional and statutory jurisdiction defining legal permissions for underwater salvage operations.",
+      "recommended_mitigation": "Verify whether wreck candidate has archaeological/heritage status (ASI / NHO registry) prior to authorizing commercial recovery.",
+      "source_reference": "The Territorial Waters, Continental Shelf, Exclusive Economic Zone and Other Maritime Zones Act, 1976 (Act 80 of 1976)"
+    },
+    {
+      "source_id": "SRC-IMO-MARPOL-ANNEX-V",
+      "title": "Regulations for the Prevention of Pollution by Garbage from Ships (Resolution MEPC.310(73))",
+      "organization": "International Maritime Organization (IMO)",
+      "authority": "Marine Environment Protection Committee (MEPC)",
+      "publication_date": "2018-10-26",
+      "version": "MEPC.310(73) / MARPOL Annex V",
+      "jurisdiction": "International Maritime Waters & Indian Ports",
+      "topic": "Mandatory Prohibition of Synthetic Garbage Discharge & Container Loss Reporting",
+      "debris_type": "Container / Plastic / Tyre",
+      "debris_family": "CONTAINER_CARGO",
+      "impact_mechanisms": [
+        "Complete global ban on discharge of all plastics, synthetic ropes, and fishing gear into the sea",
+        "Mandatory recording of accidental loss of fishing gear and cargo containers in the Garbage Record Book",
+        "Flag state and coastal state obligation to report loss coordinates to the IMO Global Integrated Shipping Information System (GISIS)"
+      ],
+      "material_degradation_profile": "International treaty compliance standard for commercial shipping fleets operating in Indian waters.",
+      "recommended_mitigation": "Cross-reference detected container targets with IMO GISIS lost container casualty reports to establish cargo manifest.",
+      "source_reference": "IMO Resolution MEPC.310(73); MARPOL Consolidated Edition Annex V (Prevention of Pollution by Garbage)"
+    },
+    {
+      "source_id": "SRC-NOAA-TYRE-2020",
+      "title": "Impact of Submerged Tyres and Artificial Reef Deployments on Benthic Habitats",
+      "organization": "National Oceanic and Atmospheric Administration (NOAA)",
+      "authority": "NOAA Marine Debris Program",
+      "publication_date": "2020-04-12",
+      "version": "v2.1",
+      "jurisdiction": "International / US Coastal",
+      "topic": "Vulcanized Rubber and Microplastics Leaching",
+      "debris_type": "Tyre",
+      "debris_family": "RUBBER_AUTOMOTIVE",
+      "impact_mechanisms": [
+        "Leaching of 6PPD-quinone and heavy metals (zinc, sulfur compounds) toxic to marine teleosts",
+        "Mobile wave scouring and mechanical abrasion of benthic substrates during storm events",
+        "Slow fragmentation into persistent synthetic micro-rubber elastomers (>200 year decomposition half-life)"
+      ],
+      "material_degradation_profile": "Vulcanized polyisoprene; extremely resistant to microbial degradation; subject to mechanical shearing and photodegradation in photic zones.",
+      "recommended_mitigation": "Targeted ROV/diver recovery without dragging across sensitive benthic epifauna; prioritize recovery from coral or seagrass beds.",
+      "source_reference": "NOAA MDP Report No. MD-2020-04; EPA Aquatic Life Ambient Water Quality Criteria"
+    },
+    {
+      "source_id": "SRC-IMO-CONTAINER-2021",
+      "title": "Intermodal Freight Units Lost at Sea: Guidelines for Reporting and Environmental Hazard Assessment",
+      "organization": "International Maritime Organization (IMO)",
+      "authority": "Maritime Safety Committee (MSC)",
+      "publication_date": "2021-06-18",
+      "version": "MSC.1/Circ.1625",
+      "jurisdiction": "International Waters",
+      "topic": "Intermodal Container Salvage & Submerged Navigation Obstruction",
+      "debris_type": "Container",
+      "debris_family": "CONTAINER_CARGO",
+      "impact_mechanisms": [
+        "Acute navigation hazard for small vessels and submarine telecommunication cables",
+        "Potential rupture of hazardous container cargo (industrial chemicals, consumer electronics, lithium batteries)",
+        "Localised galvanic corrosion and galvanic metal ion enrichment around benthic footprint"
+      ],
+      "material_degradation_profile": "Cor-ten structural steel with industrial marine primer; hull breach estimated in 10-30 years depending on salinity, depth, and oxygen saturation.",
+      "recommended_mitigation": "Acoustic side-scan sonar re-survey to confirm hull integrity before heavy lift crane cable tethering.",
+      "source_reference": "IMO Circular MSC.1/Circ.1625 (2021); World Shipping Council Containers Lost at Sea Report"
+    },
+    {
+      "source_id": "SRC-NOAA-DERELICT-VESSELS-2019",
+      "title": "Potentially Polluting Wrecks in Marine Waters: Risk Assessment and Prioritization",
+      "organization": "National Oceanic and Atmospheric Administration (NOAA) & US Coast Guard",
+      "authority": "Office of Response and Restoration",
+      "publication_date": "2019-11-05",
+      "version": "v3.0",
+      "jurisdiction": "International Marine / EEZ",
+      "topic": "Shipwreck Hull Integrity and Bunker Fuel Mitigation",
+      "debris_type": "Shipwreck",
+      "debris_family": "SUNKEN_VESSEL",
+      "impact_mechanisms": [
+        "Catastrophic or chronic release of heavy fuel oil (HFO), lubricating oils, and toxic ballast water",
+        "Trawl gear entanglement hazard creating secondary ghost fishing traps across wreck superstructure",
+        "Dual ecological role: toxicant source vs artificial reef substrate for benthic assemblages"
+      ],
+      "material_degradation_profile": "Ferrous keel and plate structure subject to sulphate-reducing bacteria and anaerobic corrosion; collapse rate variable by depth.",
+      "recommended_mitigation": "Multi-beam and SSS non-invasive structural assessment; fuel containment hot-tapping if hydrocarbons detected.",
+      "source_reference": "NOAA OR&R Potentially Polluting Wrecks Assessment (2019); IMO Nairobi International Convention on Wreck Removal"
+    },
+    {
+      "source_id": "SRC-ICAO-AIRCRAFT-SALVAGE-2022",
+      "title": "Submerged Aircraft Recovery & Environmental Impact Protocol",
+      "organization": "International Civil Aviation Organization (ICAO) & Marine Salvage Bureau",
+      "authority": "ICAO Safety and Technical Guidelines",
+      "publication_date": "2022-01-15",
+      "version": "Doc 9756 Part IV",
+      "jurisdiction": "International Waters",
+      "topic": "Derelict Aircraft Fuselage and Hazardous Avionics in Deep Water",
+      "debris_type": "Plane",
+      "debris_family": "AIRCRAFT_WRECKAGE",
+      "impact_mechanisms": [
+        "Aviation kerosene / hydraulic fluid release and battery electrolyte dispersion",
+        "Carbon-fiber reinforced polymer (CFRP) splintering causing localized micro-fiber contamination",
+        "Primary legal/forensic priority often overriding standard ecological schedules"
+      ],
+      "material_degradation_profile": "Aluminum-lithium alloys and CFRP composite skins; aluminum experiences rapid pit corrosion in hyper-saline benthic environments.",
+      "recommended_mitigation": "AUV side-scan grid mapping with 200% swath overlap; recovery with padded lifting slings to preserve forensic structure.",
+      "source_reference": "ICAO Manual of Aircraft Accident and Incident Investigation (Doc 9756)"
+    },
+    {
+      "source_id": "SRC-FAO-GHOST-NETS-2021",
+      "title": "Abandoned, Lost or Otherwise Discarded Fishing Gear (ALDFG): Global Assessment and Mitigation",
+      "organization": "Food and Agriculture Organization (FAO)",
+      "authority": "FAO Fisheries and Aquaculture Technical Paper",
+      "publication_date": "2021-08-20",
+      "version": "TP-600",
+      "jurisdiction": "Global Marine Waters",
+      "topic": "Ghost Fishing and Benthic Smothering by Derelict Fishing Gear",
+      "debris_type": "Ghost Net",
+      "debris_family": "DISCARDED_GEAR",
+      "impact_mechanisms": [
+        "Continuous unmonitored mortality of endangered marine fauna (turtles, cetaceans, apex predators)",
+        "Smothering and breaking of biogenic reef colonies (stony corals, gorgonians, sponges)",
+        "High emission rate of macro- and micro-nylon / polypropylene synthetic fibers"
+      ],
+      "material_degradation_profile": "High-density polyethylene (HDPE) and nylon filaments; UV-shielded at benthic depths, persisting for 400-600 years.",
+      "recommended_mitigation": "High priority emergency recovery using ROV hook cutter attachments; avoidance of seafloor bottom dragging.",
+      "source_reference": "FAO Technical Paper No. 600; Global Ghost Gear Initiative (GGGI) Best Practice Framework"
+    },
+    {
+      "source_id": "SRC-UNEP-CONCRETE-RUINS-2023",
+      "title": "Submerged Concrete Structures, Coastal Ruins, and Artificial Substrates in Marine Environments",
+      "organization": "United Nations Environment Programme (UNEP)",
+      "authority": "UNEP Regional Seas Programme",
+      "publication_date": "2023-03-10",
+      "version": "v1.2",
+      "jurisdiction": "Global Coastal Waters",
+      "topic": "Submerged Structural Ruin Substrate Alteration and Encrustation",
+      "debris_type": "Building",
+      "debris_family": "STRUCTURAL_SUBMERGED",
+      "impact_mechanisms": [
+        "Alteration of local hydrodynamic currents and sediment transport deposition patterns",
+        "Initial alkaline leaching (calcium hydroxide) during early immersion, stabilizing over time",
+        "Potential substrate provision for invasive benthic fouling species"
+      ],
+      "material_degradation_profile": "Portland cement and aggregate matrix; physical spalling under wave energy; stable over multiple centuries at depth.",
+      "recommended_mitigation": "In-situ monitoring; physical removal only if obstructing commercial navigational fairways or port channels.",
+      "source_reference": "UNEP Guidelines on Artificial Reefs and Coastal Structures (2023)"
+    }
+  ]
+}

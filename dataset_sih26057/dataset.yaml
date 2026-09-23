@@ -1,4 +1,4 @@
-path: C:\Users\Mantra\OneDrive\Desktop\SIH PROTOTYPE\dataset_sih26057
+path: e:\SIH PROTOTYPE\dataset_sih26057
 train: images/train
 val: images/val
 names:

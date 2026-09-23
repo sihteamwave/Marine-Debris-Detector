@@ -2,80 +2,187 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-root: #050507;
+  --bg-window: rgba(10, 14, 20, 0.88);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-glass-highlight: rgba(255, 255, 255, 0.16);
+  --glass-specular: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
 @layer base {
   * {
     scrollbar-width: thin;
-    scrollbar-color: #1c3d66 #071324;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
   }
   body {
-    @apply bg-marine-950 text-slate-100 font-sans min-h-screen;
+    background-color: var(--bg-root);
+    color: #dfe2eb;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Custom scrollbar for marine console vibe */
+/* macOS-inspired Minimal Thin Scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: #071324;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #17365d;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #0284c7;
+  background: rgba(255, 255, 255, 0.25);
 }
 
-/* Sonar radar pulse animation */
+/* Named scrollbar utility used by all view containers */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Glass Reflection & Material Utilities */
+.glass-window {
+  background: var(--bg-window);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 32px 80px -16px rgba(0, 0, 0, 0.85), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+}
+
+.glass-surface-l1 {
+  background: rgba(16, 20, 26, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-surface-l2 {
+  background: rgba(16, 20, 26, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+}
+
+.glass-surface-l3 {
+  background: rgba(26, 31, 39, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.6);
+}
+
+.glass-floating {
+  background: rgba(18, 24, 34, 0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.7);
+}
+
+.glass-specular-highlight {
+  position: relative;
+}
+.glass-specular-highlight::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+}
+
+/* Subtle Sonar Pulse Animation */
 @keyframes sonarPulse {
-  0% {
-    transform: scale(0.95);
-    opacity: 0.8;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 0.4;
-  }
-  100% {
-    transform: scale(0.95);
-    opacity: 0.8;
-  }
+  0% { transform: scale(0.97); opacity: 0.7; }
+  50% { transform: scale(1.03); opacity: 0.35; }
+  100% { transform: scale(0.97); opacity: 0.7; }
 }
 
 .animate-sonar-pulse {
-  animation: sonarPulse 3s infinite ease-in-out;
+  animation: sonarPulse 3.2s infinite ease-in-out;
 }
 
-/* Acoustic Waterfall Scan Grid Overlay */
-.sonar-waterfall-bg {
-  background-color: #020713;
-  background-image: 
-    linear-gradient(rgba(14, 165, 233, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(14, 165, 233, 0.04) 1px, transparent 1px);
-  background-size: 40px 40px;
+/* Material Symbols Outlined Fallback */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
 }
 
+/* Stitch Card Specular Accent Sheen */
+.stitch-card-sheen {
+  position: relative;
+}
+.stitch-card-sheen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(142, 205, 255, 0.45) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+/* MapLibre popup style overrides for macOS dark glass */
 .maplibregl-popup-content {
-  background: #0b1626 !important;
-  color: #f1f5f9 !important;
-  border: 1px solid #1f3c5f !important;
-  border-radius: 8px !important;
+  background: rgba(16, 20, 26, 0.95) !important;
+  color: #dfe2eb !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(20px) !important;
   padding: 10px 14px !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.8) !important;
 }
 
 .maplibregl-popup-tip {
-  border-top-color: #0b1626 !important;
+  border-top-color: rgba(16, 20, 26, 0.95) !important;
 }
 
 /* Leaflet Tactical Map Overrides */
 .leaflet-container {
   width: 100%;
   height: 100%;
-  background: #071324 !important;
+  background: #0a0e14 !important;
   font-family: inherit;
+  border-radius: inherit;
 }
 
 .leaflet-pane {
@@ -87,12 +194,12 @@
   z-index: 10 !important;
 }
 
-/* Custom Marker styles */
-.auv-arrow-marker,
-.coastal-base-label,
-.sea-label,
-.primary-detection-pin,
-.pin-callout-card {
-  background: transparent !important;
-  border: none !important;
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
